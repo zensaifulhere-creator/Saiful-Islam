@@ -1,0 +1,445 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global safety net: default deny everything
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ---------- Shared Security Primitives ----------
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isSuperAdmin() {
+      return isVerified() && request.auth.token.email is string && (
+        request.auth.token.email.lower() == 'zen.saifulhere@gmail.com' ||
+        request.auth.token.email.lower() == 'n8n.cloud.26@gmail.com'
+      );
+    }
+
+    function isAdmin() {
+      return isSuperAdmin() || (
+        isVerified() &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // ---------- Entity Validation Helpers ----------
+    function isValidSiteContent(data) {
+      return data.keys().hasAll([
+          'heroTitle',
+          'heroSubtitle',
+          'bioMissionBn',
+          'bioMissionEn',
+          'doctorName',
+          'bmdcNumber',
+          'institution',
+          'updatedAt',
+          'updatedByUid'
+        ])
+        && data.keys().hasOnly([
+          'heroEyebrow',
+          'heroTitle',
+          'heroAccentName',
+          'heroSubtitle',
+          'heroPrimaryCta',
+          'heroSecondaryCta',
+          'heroTrustMarker',
+          'heroMediaSource',
+          'heroMediaKind',
+          'heroMediaUrl',
+          'heroMediaUploadId',
+          'bioSectionKicker',
+          'bioHeading',
+          'bioMissionBn',
+          'bioMissionEn',
+          'bioParagraph1',
+          'bioParagraph2',
+          'portraitCaptionTitle',
+          'portraitCaptionSub',
+          'competencies',
+          'pillarsSectionKicker',
+          'pillarsHeading',
+          'pillarsSubheading',
+          'pillars',
+          'gallerySectionKicker',
+          'galleryHeading',
+          'galleryLeadTitle',
+          'galleryLeadCopy',
+          'occasions',
+          'credentialsSectionKicker',
+          'credentialsHeading',
+          'credentials',
+          'highlightKicker',
+          'highlightTitle',
+          'highlightSummary',
+          'highlightCtaLabel',
+          'highlightPhotoId',
+          'faqs',
+          'consultationModes',
+          'bookingSteps',
+          'connectSectionKicker',
+          'connectHeading',
+          'connectSubheading',
+          'doctorName',
+          'doctorShortName',
+          'doctorTitle',
+          'bmdcNumber',
+          'institution',
+          'phoneDisplay',
+          'email',
+          'cvObjective',
+          'hudBrandLabel',
+          'bnOverrides',
+          'updatedAt',
+          'updatedByUid'
+        ])
+        && data.heroTitle is string && data.heroTitle.size() >= 1 && data.heroTitle.size() <= 140
+        && data.heroSubtitle is string && data.heroSubtitle.size() >= 1 && data.heroSubtitle.size() <= 600
+        && data.bioMissionBn is string && data.bioMissionBn.size() >= 1 && data.bioMissionBn.size() <= 700
+        && data.bioMissionEn is string && data.bioMissionEn.size() >= 1 && data.bioMissionEn.size() <= 700
+        && data.doctorName is string && data.doctorName.size() >= 1 && data.doctorName.size() <= 140
+        && data.bmdcNumber is string && data.bmdcNumber.size() >= 1 && data.bmdcNumber.size() <= 60
+        && data.institution is string && data.institution.size() >= 1 && data.institution.size() <= 180
+        && data.updatedByUid is string && data.updatedByUid == request.auth.uid
+        && (!('heroEyebrow' in data) || (data.heroEyebrow is string && data.heroEyebrow.size() <= 200))
+        && (!('heroAccentName' in data) || (data.heroAccentName is string && data.heroAccentName.size() <= 80))
+        && (!('heroPrimaryCta' in data) || (data.heroPrimaryCta is string && data.heroPrimaryCta.size() <= 80))
+        && (!('heroSecondaryCta' in data) || (data.heroSecondaryCta is string && data.heroSecondaryCta.size() <= 80))
+        && (!('heroTrustMarker' in data) || (data.heroTrustMarker is string && data.heroTrustMarker.size() <= 220))
+        && (!('heroMediaSource' in data) || (data.heroMediaSource in ['none', 'upload', 'url']))
+        && (!('heroMediaKind' in data) || (data.heroMediaKind in ['mp4', 'gif']))
+        && (!('heroMediaUrl' in data) || (data.heroMediaUrl is string && data.heroMediaUrl.size() <= 1000))
+        && (!('heroMediaUploadId' in data) || (data.heroMediaUploadId is string && data.heroMediaUploadId.size() <= 120))
+        && (!('bioSectionKicker' in data) || (data.bioSectionKicker is string && data.bioSectionKicker.size() <= 140))
+        && (!('bioHeading' in data) || (data.bioHeading is string && data.bioHeading.size() <= 180))
+        && (!('bioParagraph1' in data) || (data.bioParagraph1 is string && data.bioParagraph1.size() <= 2000))
+        && (!('bioParagraph2' in data) || (data.bioParagraph2 is string && data.bioParagraph2.size() <= 2000))
+        && (!('portraitCaptionTitle' in data) || (data.portraitCaptionTitle is string && data.portraitCaptionTitle.size() <= 140))
+        && (!('portraitCaptionSub' in data) || (data.portraitCaptionSub is string && data.portraitCaptionSub.size() <= 160))
+        && (!('competencies' in data) || (data.competencies is list && data.competencies.size() <= 12))
+        && (!('pillarsSectionKicker' in data) || (data.pillarsSectionKicker is string && data.pillarsSectionKicker.size() <= 140))
+        && (!('pillarsHeading' in data) || (data.pillarsHeading is string && data.pillarsHeading.size() <= 180))
+        && (!('pillarsSubheading' in data) || (data.pillarsSubheading is string && data.pillarsSubheading.size() <= 300))
+        && (!('pillars' in data) || (data.pillars is list && data.pillars.size() <= 12))
+        && (!('gallerySectionKicker' in data) || (data.gallerySectionKicker is string && data.gallerySectionKicker.size() <= 140))
+        && (!('galleryHeading' in data) || (data.galleryHeading is string && data.galleryHeading.size() <= 180))
+        && (!('galleryLeadTitle' in data) || (data.galleryLeadTitle is string && data.galleryLeadTitle.size() <= 140))
+        && (!('galleryLeadCopy' in data) || (data.galleryLeadCopy is string && data.galleryLeadCopy.size() <= 420))
+        && (!('occasions' in data) || (data.occasions is list && data.occasions.size() <= 40))
+        && (!('credentialsSectionKicker' in data) || (data.credentialsSectionKicker is string && data.credentialsSectionKicker.size() <= 140))
+        && (!('credentialsHeading' in data) || (data.credentialsHeading is string && data.credentialsHeading.size() <= 180))
+        && (!('credentials' in data) || (data.credentials is list && data.credentials.size() <= 16))
+        && (!('highlightKicker' in data) || (data.highlightKicker is string && data.highlightKicker.size() <= 140))
+        && (!('highlightTitle' in data) || (data.highlightTitle is string && data.highlightTitle.size() <= 180))
+        && (!('highlightSummary' in data) || (data.highlightSummary is string && data.highlightSummary.size() <= 500))
+        && (!('highlightCtaLabel' in data) || (data.highlightCtaLabel is string && data.highlightCtaLabel.size() <= 80))
+        && (!('highlightPhotoId' in data) || (data.highlightPhotoId is string && data.highlightPhotoId.size() <= 80))
+        && (!('faqs' in data) || (data.faqs is list && data.faqs.size() <= 12))
+        && (!('consultationModes' in data) || (data.consultationModes is list && data.consultationModes.size() <= 6))
+        && (!('bookingSteps' in data) || (data.bookingSteps is list && data.bookingSteps.size() <= 8))
+        && (!('connectSectionKicker' in data) || (data.connectSectionKicker is string && data.connectSectionKicker.size() <= 140))
+        && (!('connectHeading' in data) || (data.connectHeading is string && data.connectHeading.size() <= 180))
+        && (!('connectSubheading' in data) || (data.connectSubheading is string && data.connectSubheading.size() <= 450))
+        && (!('doctorShortName' in data) || (data.doctorShortName is string && data.doctorShortName.size() <= 100))
+        && (!('doctorTitle' in data) || (data.doctorTitle is string && data.doctorTitle.size() <= 140))
+        && (!('phoneDisplay' in data) || (data.phoneDisplay is string && data.phoneDisplay.size() <= 40))
+        && (!('email' in data) || (data.email is string && data.email.size() <= 140))
+        && (!('cvObjective' in data) || (data.cvObjective is string && data.cvObjective.size() <= 1200))
+        && (!('hudBrandLabel' in data) || (data.hudBrandLabel is string && data.hudBrandLabel.size() <= 100))
+        && (!('bnOverrides' in data) || (data.bnOverrides is map && data.bnOverrides.keys().size() <= 64));
+    }
+
+    function isValidUserProfile(data, userId) {
+      return data.keys().hasAll(['uid', 'email', 'displayName', 'visitCount', 'createdAt', 'lastLoginAt'])
+        && data.keys().hasOnly(['uid', 'email', 'displayName', 'photoURL', 'visitCount', 'createdAt', 'lastLoginAt'])
+        && data.uid is string && data.uid == userId && data.uid.size() <= 128
+        && data.email is string && data.email.size() >= 3 && data.email.size() <= 160
+        && data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 120
+        && (!('photoURL' in data) || (data.photoURL is string && data.photoURL.size() <= 500))
+        && data.visitCount is int && data.visitCount >= 1 && data.visitCount <= 1000000
+        && data.createdAt is timestamp
+        && data.lastLoginAt is timestamp;
+    }
+
+    function isValidAdminGrant(data, userId) {
+      return data.keys().hasAll(['uid', 'email', 'displayName', 'grantedByEmail', 'grantedAt'])
+        && data.keys().hasOnly(['uid', 'email', 'displayName', 'grantedByEmail', 'grantedAt'])
+        && data.uid is string && data.uid == userId && data.uid.size() <= 128
+        && data.email is string && data.email.size() >= 3 && data.email.size() <= 160
+        && data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 120
+        && data.grantedByEmail is string && data.grantedByEmail.size() >= 3 && data.grantedByEmail.size() <= 160
+        && data.grantedAt is timestamp;
+    }
+
+    function isValidAppointment(data) {
+      return data.keys().hasAll([
+          'patientUid', 'patientName', 'email', 'phone', 'mode', 'date', 'slot', 'status', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'patientUid', 'patientName', 'email', 'phone', 'mode', 'date', 'slot', 'reason', 'status', 'adminNotes', 'createdAt', 'updatedAt'
+        ])
+        && data.patientUid is string && data.patientUid.size() >= 1 && data.patientUid.size() <= 128
+        && data.patientName is string && data.patientName.size() >= 1 && data.patientName.size() <= 120
+        && data.email is string && data.email.size() >= 3 && data.email.size() <= 160
+        && data.phone is string && data.phone.size() >= 4 && data.phone.size() <= 40
+        && data.mode in ['in-person', 'tele']
+        && data.date is string && data.date.size() >= 8 && data.date.size() <= 20
+        && data.slot is string && data.slot.size() >= 4 && data.slot.size() <= 20
+        && (!('reason' in data) || (data.reason is string && data.reason.size() <= 600))
+        && data.status in ['requested', 'confirmed', 'completed', 'cancelled']
+        && (!('adminNotes' in data) || (data.adminNotes is string && data.adminNotes.size() <= 600))
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidMedicalRecord(data) {
+      return data.keys().hasAll([
+          'patientUid', 'visitDate', 'diagnosis', 'prescription', 'doctorName', 'createdByUid', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'patientUid', 'patientName', 'patientEmail', 'visitDate', 'diagnosis', 'clinicalNotes', 'prescription', 'followUpDate', 'doctorName', 'createdByUid', 'createdAt', 'updatedAt'
+        ])
+        && data.patientUid is string && data.patientUid.size() >= 1 && data.patientUid.size() <= 128
+        && (!('patientName' in data) || (data.patientName is string && data.patientName.size() <= 120))
+        && (!('patientEmail' in data) || (data.patientEmail is string && data.patientEmail.size() <= 160))
+        && data.visitDate is string && data.visitDate.size() >= 4 && data.visitDate.size() <= 20
+        && data.diagnosis is string && data.diagnosis.size() >= 1 && data.diagnosis.size() <= 200
+        && (!('clinicalNotes' in data) || (data.clinicalNotes is string && data.clinicalNotes.size() <= 2000))
+        && data.prescription is string && data.prescription.size() >= 1 && data.prescription.size() <= 2000
+        && (!('followUpDate' in data) || (data.followUpDate is string && data.followUpDate.size() <= 20))
+        && data.doctorName is string && data.doctorName.size() >= 1 && data.doctorName.size() <= 120
+        && data.createdByUid is string && data.createdByUid.size() >= 1 && data.createdByUid.size() <= 128
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidPatientDocument(data) {
+      return data.keys().hasAll([
+          'patientUid', 'title', 'category', 'docSourceType', 'urlOrData', 'uploadedByUid', 'uploadedByRole', 'createdAt'
+        ])
+        && data.keys().hasOnly([
+          'patientUid', 'title', 'category', 'docSourceType', 'urlOrData', 'notes', 'uploadedByUid', 'uploadedByRole', 'createdAt'
+        ])
+        && data.patientUid is string && data.patientUid.size() >= 1 && data.patientUid.size() <= 128
+        && data.title is string && data.title.size() >= 1 && data.title.size() <= 140
+        && data.category in ['Lab Report', 'Prescription', 'Imaging', 'Discharge Summary', 'Other']
+        && data.docSourceType in ['link', 'image']
+        && data.urlOrData is string && data.urlOrData.size() >= 4 && data.urlOrData.size() <= 650000
+        && (!('notes' in data) || (data.notes is string && data.notes.size() <= 500))
+        && data.uploadedByUid is string && data.uploadedByUid.size() >= 1 && data.uploadedByUid.size() <= 128
+        && data.uploadedByRole in ['patient', 'admin']
+        && data.createdAt is timestamp;
+    }
+
+    function isValidSiteMediaManifest(data) {
+      return data.keys().hasAll([
+          'uploadId', 'mimeType', 'mediaKind', 'chunkCount', 'byteSize', 'updatedAt', 'updatedByUid'
+        ])
+        && data.keys().hasOnly([
+          'uploadId', 'mimeType', 'mediaKind', 'chunkCount', 'byteSize', 'posterDataUrl', 'imageDataUrl', 'updatedAt', 'updatedByUid'
+        ])
+        && data.uploadId is string && data.uploadId.size() >= 1 && data.uploadId.size() <= 120
+        && data.mimeType is string && data.mimeType.size() >= 3 && data.mimeType.size() <= 80
+        && data.mediaKind in ['mp4', 'gif', 'image']
+        && data.chunkCount is int && data.chunkCount >= 0 && data.chunkCount <= 12
+        && data.byteSize is int && data.byteSize >= 1 && data.byteSize <= 6291456
+        && (!('posterDataUrl' in data) || (data.posterDataUrl is string && data.posterDataUrl.size() <= 250000))
+        && (!('imageDataUrl' in data) || (data.imageDataUrl is string && data.imageDataUrl.size() <= 650000))
+        && (
+          (data.mediaKind == 'image' && data.chunkCount == 0 && 'imageDataUrl' in data && data.imageDataUrl.size() >= 10) ||
+          (data.mediaKind in ['mp4', 'gif'] && data.chunkCount >= 1)
+        )
+        && data.updatedAt is timestamp
+        && data.updatedByUid is string && data.updatedByUid == request.auth.uid;
+    }
+
+    function isValidSiteMediaChunk(data) {
+      return data.keys().hasAll([
+          'uploadId', 'chunkIndex', 'data', 'updatedAt', 'updatedByUid'
+        ])
+        && data.keys().hasOnly([
+          'uploadId', 'chunkIndex', 'data', 'updatedAt', 'updatedByUid'
+        ])
+        && data.uploadId is string && data.uploadId.size() >= 1 && data.uploadId.size() <= 120
+        && data.chunkIndex is int && data.chunkIndex >= 0 && data.chunkIndex <= 11
+        && data.data is string && data.data.size() >= 1 && data.data.size() <= 700000
+        && data.updatedAt is timestamp
+        && data.updatedByUid is string && data.updatedByUid == request.auth.uid;
+    }
+
+    // ---------- 1. Live CMS Site Content ----------
+    match /siteContent/{docId} {
+      allow get: if isValidId(docId);
+      allow list: if false;
+      allow create, update: if isValidId(docId)
+        && isAdmin()
+        && isValidSiteContent(incoming())
+        && incoming().updatedAt == request.time;
+      allow delete: if false;
+    }
+
+    // ---------- 1b. Hero Motion Media Manifest & Chunks (Non-PII Public Portfolio Media) ----------
+    match /siteMedia/{mediaId} {
+      allow get: if isValidId(mediaId);
+      allow list: if false;
+      allow create, update: if isValidId(mediaId)
+        && isAdmin()
+        && isValidSiteMediaManifest(incoming())
+        && incoming().updatedAt == request.time;
+      allow delete: if isValidId(mediaId) && isAdmin();
+    }
+
+    match /siteMediaChunks/{chunkId} {
+      allow get: if isValidId(chunkId);
+      allow list: if false;
+      allow create, update: if isValidId(chunkId)
+        && isAdmin()
+        && isValidSiteMediaChunk(incoming())
+        && incoming().updatedAt == request.time;
+      allow delete: if isValidId(chunkId) && isAdmin();
+    }
+
+    // ---------- 2. Visitor Profiles (PII Isolated) ----------
+    match /users/{userId} {
+      allow get: if isValidId(userId) && (isOwner(userId) || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isValidId(userId)
+        && isVerified()
+        && isOwner(userId)
+        && isValidUserProfile(incoming(), userId)
+        && incoming().email == request.auth.token.email
+        && incoming().visitCount == 1
+        && incoming().createdAt == request.time
+        && incoming().lastLoginAt == request.time;
+      allow update: if isValidId(userId)
+        && isVerified()
+        && isValidUserProfile(incoming(), userId)
+        && incoming().uid == existing().uid
+        && incoming().email == existing().email
+        && incoming().createdAt == existing().createdAt
+        && incoming().lastLoginAt == request.time
+        && (
+          (isOwner(userId) && incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'photoURL', 'lastLoginAt', 'visitCount'])) ||
+          isAdmin()
+        );
+      allow delete: if isValidId(userId) && isSuperAdmin();
+    }
+
+    // ---------- 3. Admin Role Grants ----------
+    match /admins/{userId} {
+      allow get: if isValidId(userId) && (isOwner(userId) || isAdmin());
+      allow list: if isAdmin();
+      allow create, update: if isValidId(userId)
+        && isAdmin()
+        && isValidAdminGrant(incoming(), userId)
+        && incoming().grantedAt == request.time;
+      allow delete: if isValidId(userId) && isAdmin();
+    }
+
+    // ---------- 4. Consultation Appointments ----------
+    match /appointments/{appointmentId} {
+      allow get: if isValidId(appointmentId)
+        && isSignedIn()
+        && (existing().patientUid == request.auth.uid || isAdmin());
+      allow list: if isAdmin()
+        || (isSignedIn() && resource.data.patientUid == request.auth.uid);
+      allow create: if isValidId(appointmentId)
+        && isVerified()
+        && isValidAppointment(incoming())
+        && incoming().patientUid == request.auth.uid
+        && incoming().status == 'requested'
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(appointmentId)
+        && isVerified()
+        && isValidAppointment(incoming())
+        && incoming().patientUid == existing().patientUid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          isAdmin() ||
+          (
+            existing().patientUid == request.auth.uid
+            && existing().status == 'requested'
+            && incoming().status == 'cancelled'
+            && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])
+          )
+        );
+      allow delete: if isValidId(appointmentId) && isAdmin();
+    }
+
+    // ---------- 5. Doctor-Issued Medical Records & Prescriptions ----------
+    match /medicalRecords/{recordId} {
+      allow get: if isValidId(recordId)
+        && isSignedIn()
+        && (existing().patientUid == request.auth.uid || isAdmin());
+      allow list: if isAdmin()
+        || (isSignedIn() && resource.data.patientUid == request.auth.uid);
+      allow create: if isValidId(recordId)
+        && isAdmin()
+        && isValidMedicalRecord(incoming())
+        && incoming().createdByUid == request.auth.uid
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+      allow update: if isValidId(recordId)
+        && isAdmin()
+        && isValidMedicalRecord(incoming())
+        && incoming().patientUid == existing().patientUid
+        && incoming().createdByUid == existing().createdByUid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time;
+      allow delete: if isValidId(recordId) && isAdmin();
+    }
+
+    // ---------- 6. Patient Attached & Issued Medical Documents ----------
+    match /patientDocuments/{docId} {
+      allow get: if isValidId(docId)
+        && isSignedIn()
+        && (existing().patientUid == request.auth.uid || isAdmin());
+      allow list: if isAdmin()
+        || (isSignedIn() && resource.data.patientUid == request.auth.uid);
+      allow create: if isValidId(docId)
+        && isVerified()
+        && isValidPatientDocument(incoming())
+        && incoming().uploadedByUid == request.auth.uid
+        && incoming().createdAt == request.time
+        && (
+          (incoming().patientUid == request.auth.uid && incoming().uploadedByRole == 'patient') ||
+          isAdmin()
+        );
+      allow update: if isValidId(docId)
+        && isAdmin()
+        && isValidPatientDocument(incoming())
+        && incoming().patientUid == existing().patientUid
+        && incoming().uploadedByUid == existing().uploadedByUid
+        && incoming().createdAt == existing().createdAt;
+      allow delete: if isValidId(docId)
+        && isVerified()
+        && (existing().patientUid == request.auth.uid || isAdmin());
+    }
+  }
+}

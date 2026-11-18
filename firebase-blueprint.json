@@ -1,0 +1,267 @@
+{
+  "entities": {
+    "SiteContent": {
+      "title": "SiteContent",
+      "description": "CMS configuration controlling all editable portfolio text, bilingual mission statements, accordion pillars, 10+ occasion gallery items, credentials, and contact info.",
+      "type": "object",
+      "properties": {
+        "heroEyebrow": { "type": "string", "maxLength": 200 },
+        "heroTitle": { "type": "string", "maxLength": 140 },
+        "heroAccentName": { "type": "string", "maxLength": 80 },
+        "heroSubtitle": { "type": "string", "maxLength": 600 },
+        "heroPrimaryCta": { "type": "string", "maxLength": 80 },
+        "heroSecondaryCta": { "type": "string", "maxLength": 80 },
+        "heroTrustMarker": { "type": "string", "maxLength": 220 },
+        "heroMediaSource": { "type": "string", "enum": ["none", "upload", "url"] },
+        "heroMediaKind": { "type": "string", "enum": ["mp4", "gif"] },
+        "heroMediaUrl": { "type": "string", "maxLength": 1000 },
+        "heroMediaUploadId": { "type": "string", "maxLength": 120 },
+        "bioSectionKicker": { "type": "string", "maxLength": 140 },
+        "bioHeading": { "type": "string", "maxLength": 180 },
+        "bioMissionBn": { "type": "string", "maxLength": 700 },
+        "bioMissionEn": { "type": "string", "maxLength": 700 },
+        "bioParagraph1": { "type": "string", "maxLength": 2000 },
+        "bioParagraph2": { "type": "string", "maxLength": 2000 },
+        "portraitCaptionTitle": { "type": "string", "maxLength": 140 },
+        "portraitCaptionSub": { "type": "string", "maxLength": 160 },
+        "competencies": { "type": "array" },
+        "pillarsSectionKicker": { "type": "string", "maxLength": 140 },
+        "pillarsHeading": { "type": "string", "maxLength": 180 },
+        "pillarsSubheading": { "type": "string", "maxLength": 300 },
+        "pillars": { "type": "array" },
+        "gallerySectionKicker": { "type": "string", "maxLength": 140 },
+        "galleryHeading": { "type": "string", "maxLength": 180 },
+        "galleryLeadTitle": { "type": "string", "maxLength": 140 },
+        "galleryLeadCopy": { "type": "string", "maxLength": 420 },
+        "occasions": { "type": "array" },
+        "credentialsSectionKicker": { "type": "string", "maxLength": 140 },
+        "credentialsHeading": { "type": "string", "maxLength": 180 },
+        "credentials": { "type": "array" },
+        "highlightKicker": { "type": "string", "maxLength": 140 },
+        "highlightTitle": { "type": "string", "maxLength": 180 },
+        "highlightSummary": { "type": "string", "maxLength": 500 },
+        "highlightCtaLabel": { "type": "string", "maxLength": 80 },
+        "highlightPhotoId": { "type": "string", "maxLength": 80 },
+        "faqs": { "type": "array" },
+        "consultationModes": { "type": "array" },
+        "bookingSteps": { "type": "array" },
+        "connectSectionKicker": { "type": "string", "maxLength": 140 },
+        "connectHeading": { "type": "string", "maxLength": 180 },
+        "connectSubheading": { "type": "string", "maxLength": 450 },
+        "doctorName": { "type": "string", "maxLength": 140 },
+        "doctorShortName": { "type": "string", "maxLength": 100 },
+        "doctorTitle": { "type": "string", "maxLength": 140 },
+        "bmdcNumber": { "type": "string", "maxLength": 60 },
+        "institution": { "type": "string", "maxLength": 180 },
+        "phoneDisplay": { "type": "string", "maxLength": 40 },
+        "email": { "type": "string", "maxLength": 140 },
+        "cvObjective": { "type": "string", "maxLength": 1200 },
+        "hudBrandLabel": { "type": "string", "maxLength": 100 },
+        "bnOverrides": { "type": "object", "description": "Optional live Bangla translations editable from Admin Studio." },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "updatedByUid": { "type": "string", "maxLength": 128 }
+      },
+      "required": [
+        "heroTitle",
+        "heroSubtitle",
+        "bioMissionBn",
+        "bioMissionEn",
+        "doctorName",
+        "bmdcNumber",
+        "institution"
+      ]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Authenticated visitor profile stored for portal personalization and Super Admin visitor directory.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "format": "email", "maxLength": 160 },
+        "displayName": { "type": "string", "maxLength": 120 },
+        "photoURL": { "type": "string", "maxLength": 500 },
+        "visitCount": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "lastLoginAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "displayName", "visitCount", "createdAt", "lastLoginAt"]
+    },
+    "AdminGrant": {
+      "title": "AdminGrant",
+      "description": "Role-based access record granting Admin privileges to a specific user UID.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "format": "email", "maxLength": 160 },
+        "displayName": { "type": "string", "maxLength": 120 },
+        "grantedByEmail": { "type": "string", "maxLength": 160 },
+        "grantedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "displayName", "grantedByEmail", "grantedAt"]
+    },
+    "Appointment": {
+      "title": "Appointment",
+      "description": "Consultation request created by an authenticated patient and managed by Dr. Fariha / Admins.",
+      "type": "object",
+      "properties": {
+        "patientUid": { "type": "string", "maxLength": 128 },
+        "patientName": { "type": "string", "maxLength": 120 },
+        "email": { "type": "string", "maxLength": 160 },
+        "phone": { "type": "string", "maxLength": 40 },
+        "mode": { "type": "string", "enum": ["in-person", "tele"] },
+        "date": { "type": "string", "maxLength": 20 },
+        "slot": { "type": "string", "maxLength": 20 },
+        "reason": { "type": "string", "maxLength": 600 },
+        "status": { "type": "string", "enum": ["requested", "confirmed", "completed", "cancelled"] },
+        "adminNotes": { "type": "string", "maxLength": 600 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "patientUid",
+        "patientName",
+        "email",
+        "phone",
+        "mode",
+        "date",
+        "slot",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "MedicalRecord": {
+      "title": "MedicalRecord",
+      "description": "Clinical visit summary, diagnosis, and prescription issued by an Admin to a patient's personal dashboard.",
+      "type": "object",
+      "properties": {
+        "patientUid": { "type": "string", "maxLength": 128 },
+        "patientName": { "type": "string", "maxLength": 120 },
+        "patientEmail": { "type": "string", "maxLength": 160 },
+        "visitDate": { "type": "string", "maxLength": 20 },
+        "diagnosis": { "type": "string", "maxLength": 200 },
+        "clinicalNotes": { "type": "string", "maxLength": 2000 },
+        "prescription": { "type": "string", "maxLength": 2000 },
+        "followUpDate": { "type": "string", "maxLength": 20 },
+        "doctorName": { "type": "string", "maxLength": 120 },
+        "createdByUid": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "patientUid",
+        "visitDate",
+        "diagnosis",
+        "prescription",
+        "doctorName",
+        "createdByUid",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "PatientDocument": {
+      "title": "PatientDocument",
+      "description": "Medical report link or compact compressed preview image attached by a patient or issued by an Admin.",
+      "type": "object",
+      "properties": {
+        "patientUid": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 140 },
+        "category": { "type": "string", "enum": ["Lab Report", "Prescription", "Imaging", "Discharge Summary", "Other"] },
+        "docSourceType": { "type": "string", "enum": ["link", "image"] },
+        "urlOrData": { "type": "string", "maxLength": 650000 },
+        "notes": { "type": "string", "maxLength": 500 },
+        "uploadedByUid": { "type": "string", "maxLength": 128 },
+        "uploadedByRole": { "type": "string", "enum": ["patient", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "patientUid",
+        "title",
+        "category",
+        "docSourceType",
+        "urlOrData",
+        "uploadedByUid",
+        "uploadedByRole",
+        "createdAt"
+      ]
+    },
+    "SiteMediaManifest": {
+      "title": "SiteMediaManifest",
+      "description": "Metadata manifest describing an uploaded Hero doctor video/GIF or bounded gallery photograph.",
+      "type": "object",
+      "properties": {
+        "uploadId": { "type": "string", "maxLength": 120 },
+        "mimeType": { "type": "string", "maxLength": 80 },
+        "mediaKind": { "type": "string", "enum": ["mp4", "gif", "image"] },
+        "chunkCount": { "type": "number" },
+        "byteSize": { "type": "number" },
+        "posterDataUrl": { "type": "string", "maxLength": 250000 },
+        "imageDataUrl": { "type": "string", "maxLength": 650000 },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "updatedByUid": { "type": "string", "maxLength": 128 }
+      },
+      "required": [
+        "uploadId",
+        "mimeType",
+        "mediaKind",
+        "chunkCount",
+        "byteSize",
+        "updatedAt",
+        "updatedByUid"
+      ]
+    },
+    "SiteMediaChunk": {
+      "title": "SiteMediaChunk",
+      "description": "Bounded base64 binary chunk (<= 700KB) of an uploaded Hero doctor MP4 video or GIF.",
+      "type": "object",
+      "properties": {
+        "uploadId": { "type": "string", "maxLength": 120 },
+        "chunkIndex": { "type": "number" },
+        "data": { "type": "string", "maxLength": 700000 },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "updatedByUid": { "type": "string", "maxLength": 128 }
+      },
+      "required": [
+        "uploadId",
+        "chunkIndex",
+        "data",
+        "updatedAt",
+        "updatedByUid"
+      ]
+    }
+  },
+  "firestore": {
+    "/siteContent/{docId}": {
+      "schema": { "$ref": "#/entities/SiteContent" },
+      "description": "Live portfolio CMS content (primary document id: main)."
+    },
+    "/siteMedia/{mediaId}": {
+      "schema": { "$ref": "#/entities/SiteMediaManifest" },
+      "description": "Publicly readable, admin-managed Hero video/GIF manifest metadata."
+    },
+    "/siteMediaChunks/{chunkId}": {
+      "schema": { "$ref": "#/entities/SiteMediaChunk" },
+      "description": "Publicly readable, admin-managed bounded base64 chunks for uploaded Hero video/GIF."
+    },
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Signed-in visitor directory and private user metadata."
+    },
+    "/admins/{userId}": {
+      "schema": { "$ref": "#/entities/AdminGrant" },
+      "description": "Promoted Admin role grants managed by Super Admin."
+    },
+    "/appointments/{appointmentId}": {
+      "schema": { "$ref": "#/entities/Appointment" },
+      "description": "Patient consultation bookings scoped to patientUid and Admins."
+    },
+    "/medicalRecords/{recordId}": {
+      "schema": { "$ref": "#/entities/MedicalRecord" },
+      "description": "Doctor-issued prescriptions and clinical visit notes scoped to patientUid."
+    },
+    "/patientDocuments/{docId}": {
+      "schema": { "$ref": "#/entities/PatientDocument" },
+      "description": "Medical report links and compact image previews scoped to patientUid."
+    }
+  }
+}

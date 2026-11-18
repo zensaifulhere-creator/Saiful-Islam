@@ -1,0 +1,465 @@
+@import "tailwindcss";
+
+:root {
+  --pearl-bg: #F7FBFD;
+  --pearl-mist: #D6E6EF;
+  --pearl-cerulean: #7FA6B8;
+  --pearl-teal-ink: #21475B;
+  --pearl-slate: #13232D;
+  --pearl-white: #FFFFFF;
+  --top-h: 72px;
+  --ease-cinematic: cubic-bezier(0.22, 1, 0.36, 1);
+  --spring-ios: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --lg-x: 50%;
+  --lg-y: 25%;
+}
+
+html {
+  scroll-behavior: auto;
+  background-color: var(--pearl-bg);
+  color: var(--pearl-slate);
+}
+
+body {
+  font-family: 'DM Sans', 'Hind Siliguri', sans-serif;
+  font-variant-numeric: tabular-nums;
+  background-color: var(--pearl-bg);
+  color: var(--pearl-slate);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Crisp Outfit Headings & Clean DM Sans Tabular Clinical Data */
+.serif-font,
+.mograph-display {
+  font-family: 'Outfit', 'Hind Siliguri', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.mono-font {
+  font-family: 'DM Sans', 'JetBrains Mono', 'Hind Siliguri', sans-serif;
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+/* Crisp Sculpted Fraunces Display Numerals Strictly for Header / Step Indices */
+.num-display {
+  font-family: 'Fraunces', 'Hind Siliguri', Georgia, serif;
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.bengali-text {
+  font-family: 'Hind Siliguri', 'DM Sans', sans-serif;
+  line-height: 1.8;
+}
+
+/* Isolated Professional Executive Typography for Printable & Downloadable CV */
+.cv-professional-font {
+  font-family: 'DM Sans', 'Hind Siliguri', system-ui, -apple-system, sans-serif !important;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  color: #13232D;
+}
+
+.cv-professional-font .cv-serif {
+  font-family: 'Lora', 'Hind Siliguri', Georgia, serif !important;
+  letter-spacing: -0.015em;
+}
+
+.cv-professional-font .cv-mono {
+  font-family: 'DM Sans', 'JetBrains Mono', monospace !important;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   iOS 26 Liquid Glass Material Physics (Compositor-Optimized)
+   3-Tier Shadow Stack:
+   1. Specular inset rim + caustic bounce
+   2. Tight contact shadow (grounding glass onto Pearl canvas)
+   3. Soft atmospheric ambient shadow
+   ========================================================================== */
+.liquid-glass {
+  position: relative;
+  isolation: isolate;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(247, 251, 253, 0.82) 54%,
+    rgba(214, 230, 239, 0.64) 100%
+  );
+  backdrop-filter: blur(14px) saturate(180%) brightness(1.03);
+  -webkit-backdrop-filter: blur(14px) saturate(180%) brightness(1.03);
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  box-shadow:
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.96),
+    inset 0 -1.5px 2px rgba(127, 166, 184, 0.3),
+    inset 1px 0 1px rgba(255, 255, 255, 0.6),
+    0 2px 6px -1px rgba(42, 62, 75, 0.08),
+    0 12px 26px -8px rgba(42, 62, 75, 0.12),
+    0 26px 52px -18px rgba(42, 62, 75, 0.1);
+  transform: translateZ(0);
+  transition:
+    transform 0.36s var(--spring-ios),
+    box-shadow 0.32s var(--ease-cinematic),
+    border-color 0.26s ease;
+}
+
+.liquid-glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    360px circle at var(--lg-x, 50%) var(--lg-y, 20%),
+    rgba(255, 255, 255, 0.56) 0%,
+    rgba(214, 230, 239, 0.18) 42%,
+    transparent 74%
+  );
+  opacity: 0.78;
+  mix-blend-mode: overlay;
+}
+
+/* Keep cursor glow strictly on UI chrome — never blend white wash onto photographs */
+.liquid-glass-no-glare::after {
+  display: none !important;
+}
+
+.liquid-glass-interactive:hover {
+  transform: translate3d(0, -3px, 0) scale(1.008);
+  border-color: rgba(127, 166, 184, 0.68);
+  box-shadow:
+    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.99),
+    inset 0 -1.5px 2px rgba(127, 166, 184, 0.4),
+    0 4px 10px -2px rgba(42, 62, 75, 0.11),
+    0 18px 36px -10px rgba(42, 62, 75, 0.16),
+    0 34px 64px -20px rgba(42, 62, 75, 0.14);
+}
+
+.liquid-glass-interactive:active {
+  transform: translate3d(0, 0, 0) scale(0.985);
+}
+
+/* Deep Arctic Slate Liquid Glass (inspired by dark capsule in iOS reference) */
+.liquid-glass-dark {
+  position: relative;
+  isolation: isolate;
+  background: linear-gradient(
+    155deg,
+    rgba(42, 62, 75, 0.94) 0%,
+    rgba(42, 62, 75, 0.85) 58%,
+    rgba(29, 44, 54, 0.96) 100%
+  );
+  backdrop-filter: blur(16px) saturate(185%);
+  -webkit-backdrop-filter: blur(16px) saturate(185%);
+  border: 1px solid rgba(214, 230, 239, 0.26);
+  box-shadow:
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.36),
+    inset 0 -1.5px 2px rgba(127, 166, 184, 0.24),
+    0 3px 8px -2px rgba(22, 34, 42, 0.28),
+    0 14px 32px -10px rgba(42, 62, 75, 0.34),
+    0 28px 56px -18px rgba(42, 62, 75, 0.26);
+  transform: translateZ(0);
+  transition:
+    box-shadow 0.32s var(--ease-cinematic),
+    border-color 0.28s ease,
+    background-color 0.25s ease;
+}
+
+.liquid-glass-dark::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    340px circle at var(--lg-x, 50%) var(--lg-y, 20%),
+    rgba(214, 230, 239, 0.24) 0%,
+    transparent 65%
+  );
+}
+
+/* Scroll-reactive Nav Bar Elevation Modifiers */
+.nav-pill-scrolled {
+  border-color: rgba(127, 166, 184, 0.55);
+  box-shadow:
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.98),
+    inset 0 -1.5px 2px rgba(127, 166, 184, 0.36),
+    0 4px 10px -2px rgba(42, 62, 75, 0.14),
+    0 16px 34px -10px rgba(42, 62, 75, 0.18),
+    0 28px 58px -18px rgba(42, 62, 75, 0.15);
+}
+
+.nav-capsule-scrolled {
+  border-color: rgba(214, 230, 239, 0.34);
+  box-shadow:
+    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.42),
+    inset 0 -1.5px 2px rgba(127, 166, 184, 0.28),
+    0 6px 14px -3px rgba(18, 28, 35, 0.34),
+    0 20px 44px -12px rgba(42, 62, 75, 0.42),
+    0 36px 70px -20px rgba(42, 62, 75, 0.32);
+}
+
+/* Refractive Floating Nav Droplet Lens (Spring Solver Controlled — no CSS transform transition) */
+.liquid-droplet-lens {
+  background: linear-gradient(
+    180deg,
+    rgba(247, 251, 253, 0.46) 0%,
+    rgba(214, 230, 239, 0.2) 45%,
+    rgba(127, 166, 184, 0.28) 86%,
+    rgba(247, 251, 253, 0.58) 100%
+  );
+  backdrop-filter: blur(10px) saturate(190%) brightness(1.16);
+  -webkit-backdrop-filter: blur(10px) saturate(190%) brightness(1.16);
+  filter: url(#ios-liquid-glass);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.92),
+    inset 0 -2px 4px rgba(214, 230, 239, 0.48),
+    inset 1.5px 0 2px rgba(127, 166, 184, 0.36),
+    inset -1.5px 0 2px rgba(214, 230, 239, 0.36);
+  transform-origin: center center;
+  will-change: transform, opacity;
+  contain: layout style;
+}
+
+/* Dedicated GPU-composited trailing shadow under nav droplet (moves via transform only) */
+.liquid-droplet-shadow {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(15, 28, 36, 0.56) 0%,
+    rgba(15, 28, 36, 0.22) 55%,
+    transparent 82%
+  );
+  filter: blur(7px);
+  transform-origin: center center;
+  will-change: transform, opacity;
+  contain: layout style;
+}
+
+/* Velocity-Squish Segmented Control Thumb + Trailing Shadow */
+.liquid-segment-thumb {
+  background: linear-gradient(
+    160deg,
+    rgba(42, 62, 75, 0.98) 0%,
+    rgba(42, 62, 75, 0.9) 65%,
+    rgba(30, 46, 56, 0.98) 100%
+  );
+  border: 1px solid rgba(214, 230, 239, 0.25);
+  box-shadow:
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.28),
+    inset 0 -1px 2px rgba(127, 166, 184, 0.22);
+  transform-origin: center center;
+  will-change: transform, opacity;
+  contain: layout style;
+}
+
+.liquid-segment-shadow {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(42, 62, 75, 0.34) 0%,
+    rgba(42, 62, 75, 0.1) 60%,
+    transparent 85%
+  );
+  filter: blur(5px);
+  transform-origin: center center;
+  will-change: transform, opacity;
+  contain: layout style;
+}
+
+.pearl-glass {
+  background: rgba(247, 251, 253, 0.76);
+  backdrop-filter: blur(14px) saturate(170%);
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, 0.88);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.94),
+    0 2px 6px -1px rgba(42, 62, 75, 0.08),
+    0 18px 44px -12px rgba(42, 62, 75, 0.12);
+}
+
+/* Tactile Micro-Press & Lift Feedback */
+.tactile-pill {
+  transition:
+    transform 0.26s var(--spring-ios),
+    background-color 0.22s ease,
+    border-color 0.22s ease,
+    box-shadow 0.26s ease;
+}
+
+.tactile-pill:hover {
+  transform: translate3d(0, -1.5px, 0);
+}
+
+.tactile-pill:active {
+  transform: translate3d(0, 0, 0) scale(0.965);
+}
+
+/* Subtle Architectural Grid + Soft Ambient Glow */
+.pearl-grid {
+  background-image:
+    linear-gradient(rgba(127, 166, 184, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(127, 166, 184, 0.16) 1px, transparent 1px);
+  background-size: 76px 76px;
+}
+
+/* Z-Depth Cinematic Layering: Natural Vertical Stack on Mobile, Fixed 3D Deck on Desktop (>= 768px) */
+.zcard {
+  position: relative;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  background-color: var(--pearl-bg);
+}
+
+@media (min-width: 768px) {
+  .zcard {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100svh;
+    transform-origin: center center;
+    will-change: transform, opacity;
+    overflow: hidden;
+    background-color: var(--pearl-bg);
+  }
+
+  .zcard[data-card="1"] { z-index: 10; }
+  .zcard[data-card="2"] { z-index: 20; transform: translate3d(0, 100%, 0); }
+  .zcard[data-card="3"] { z-index: 30; transform: translate3d(0, 100%, 0); }
+  .zcard[data-card="4"] { z-index: 40; transform: translate3d(0, 100%, 0); }
+  .zcard[data-card="5"] { z-index: 50; transform: translate3d(0, 100%, 0); }
+  .zcard[data-card="6"] { z-index: 60; transform: translate3d(0, 100%, 0); }
+}
+
+/* 3D Perspective Stage for Floating-to-Ordered Cards */
+.float-stage {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
+.float-card {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+.pillar-levitate-inner {
+  will-change: transform, opacity;
+  transform-origin: center center;
+}
+
+@keyframes ambient-hover {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -6px, 0); }
+}
+
+.animate-ambient-float {
+  animation: ambient-hover 6.5s ease-in-out infinite;
+}
+
+@keyframes scroll-cue {
+  0% { transform: scaleY(0); transform-origin: top; opacity: 0.4; }
+  50% { transform: scaleY(1); transform-origin: top; opacity: 1; }
+  51% { transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; opacity: 0.3; }
+}
+
+.animate-scroll-cue {
+  animation: scroll-cue 2.4s var(--ease-cinematic) infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -6px, 0) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Reduced Motion Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-spacer {
+    display: none !important;
+  }
+  .zcard {
+    position: relative !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100vh;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  .float-card {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  .animate-ambient-float,
+  .animate-scroll-cue {
+    animation: none !important;
+  }
+  .liquid-glass,
+  .liquid-glass-dark,
+  .liquid-droplet-lens,
+  .tactile-pill {
+    transition: none !important;
+  }
+}
+
+/* Print Layout for Printable CV Summary & Medical Records */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 14mm;
+  }
+  html,
+  body {
+    height: auto !important;
+    overflow: visible !important;
+    background: #FFFFFF !important;
+    color: #13232D !important;
+    font-family: 'DM Sans', 'Hind Siliguri', system-ui, sans-serif !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only-cv {
+    position: static !important;
+    inset: auto !important;
+    display: block !important;
+    background: #FFFFFF !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+  .print-cv-sheet {
+    box-shadow: none !important;
+    border: none !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+  }
+}
